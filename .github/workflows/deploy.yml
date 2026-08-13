@@ -39,12 +39,12 @@ jobs:
           push: true
           tags: sarwarxsami/campus-logistic-service:latest
 
-      # - name: Build and push reservation-service
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: ./reservation-service
-      #     push: true
-      #     tags: sarwarxsami/campus-reservation-service:latest
+      - name: Build and push reservation-service
+        uses: docker/build-push-action@v5
+        with:
+          context: ./reservation-service
+          push: true
+          tags: sarwarxsami/campus-reservation-service:latest
 
       - name: Build and push search-service
         uses: docker/build-push-action@v5
