@@ -1,0 +1,91 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push create-service
+        uses: docker/build-push-action@v5
+        with:
+          context: ./create-service
+          push: true
+          tags: sarwarxsami/campus-create-service:latest
+
+      - name: Build and push login-service
+        uses: docker/build-push-action@v5
+        with:
+          context: ./login-service
+          push: true
+          tags: sarwarxsami/campus-login-service:latest
+
+      - name: Build and push logistic-service
+        uses: docker/build-push-action@v5
+        with:
+          context: ./logistic-service
+          push: true
+          tags: sarwarxsami/campus-logistic-service:latest
+
+      # - name: Build and push reservation-service
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: ./reservation-service
+      #     push: true
+      #     tags: sarwarxsami/campus-reservation-service:latest
+
+      - name: Build and push search-service
+        uses: docker/build-push-action@v5
+        with:
+          context: ./search-service
+          push: true
+          tags: sarwarxsami/campus-search-service:latest
+
+      - name: Build and push update-service
+        uses: docker/build-push-action@v5
+        with:
+          context: ./update-service
+          push: true
+          tags: sarwarxsami/campus-update-service:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy files to VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          source: "./docker-compose.yml,db/init.sql,./api-gateway/nginx.conf"
+          target: /home/ubuntu/campus-management-microservice
+          strip_components: 0
+
+      - name: SSH and deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+                  cd /home/ubuntu/campus-management-microservice
+                  sudo docker compose down
+                  sudo docker compose pull
+                  sudo docker compose up -d

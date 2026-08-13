@@ -1,0 +1,103 @@
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    networks:
+      - user-net
+      - task-net
+      - default-net
+    depends_on:
+      - login-service
+      - search-service
+    volumes:
+      - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
+  db:
+    image: postgres:latest
+    container_name: postgres-db
+    volumes:
+      - new-vol:/var/lib/postgresql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgresdb
+    networks:
+      - db-net
+
+  create-service:
+    image: sarwarxsami/campus-create-service:latest
+    container_name: campus-create-service
+    networks:
+      - task-net
+      - db-net
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+
+  login-service:
+    image: sarwarxsami/campus-login-service
+    container_name: campus-login-service
+    networks:
+      - user-net
+      - db-net
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+
+
+  search-service:
+    image: sarwarxsami/campus-search-service
+    container_name: campus-search-service
+    networks:
+      - default-net
+      - db-net
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+
+  update-service:
+    image: sarwarxsami/campus-update-service
+    container_name: campus-update-service
+    networks:
+      - task-net
+      - db-net
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+
+  reservation-service:
+    image: sarwarxsami/campus-reservation-service
+    container_name: campus-reservation-service
+    networks:
+      - default-net
+      - db-net
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+
+  logistic-service:
+    image: sarwarxsami/campus-logistic-service
+    container_name: campus-logistic-service
+    networks:
+      - default-net
+      - db-net
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+
+volumes:
+  new-vol:
+
+networks:
+  user-net:
+  task-net:
+  default-net:
+  db-net:

@@ -1,0 +1,4 @@
+CONTAINER_NAME/HOST NAME:postgres-db
+POSTGRES_USER=user
+POSTGRES_PASSWORD=password
+POSTGRES_DB=postgresdb
