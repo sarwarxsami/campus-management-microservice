@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Service</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="aside-logo">
+      Search Service
+      <small>/service/search-service</small>
+    </div>
+    <nav>
+      <div class="nav-group">Resources</div>
+      <a href="#" class="active" onclick="showPanel('resources')">🗂 Resources</a>
+      <a href="#" onclick="showPanel('available')">✅ Availability</a>
+      <a href="#" onclick="showPanel('reservations')">📅 Reservations</a>
+      <a href="#" onclick="showPanel('descriptors-res')">🏷 Resource Descriptors</a>
+      
+      <div class="nav-group">Lookup</div>
+      <a href="#" onclick="showPanel('locations')">📍 Locations</a>
+      <a href="#" onclick="showPanel('descriptors')">🔖 Descriptors</a>
+      
+      <div class="nav-group">Admin</div>
+      <a href="#" onclick="showPanel('users')">👥 Users</a>
+      <a href="#" onclick="showPanel('students')">🎓 Students</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="page">
+    <h1>Search Service API Explorer</h1>
+    <div class="page-sub">/service/search-service :3001</div>
+
+    <!-- Resources Panel -->
+    <div id="panel-resources" class="panel active">
+      <div class="card">
+        <h2>GET /resources</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Name</label>
+            <input id="r-name" placeholder="e.g. Room A">
+          </div>
+          <div class="form-field">
+            <label>Type</label>
+            <input id="r-type" placeholder="e.g. classroom">
+          </div>
+          <div class="form-field">
+            <label>Location ID</label>
+            <input id="r-loc" type="number" placeholder="2">
+          </div>
+          <button class="btn btn-primary" onclick="fetchResources()">Fetch</button>
+        </div>
+        <div id="res-result" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Availability Panel -->
+    <div id="panel-available" class="panel">
+      <div class="card">
+        <h2>GET /resources/available</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Start (ISO 8601)</label>
+            <input id="av-start" placeholder="2026-08-13T09:00:00">
+          </div>
+          <div class="form-field">
+            <label>Duration (min)</label>
+            <input id="av-dur" type="number" placeholder="60">
+          </div>
+          <div class="form-field">
+            <label>Location ID (opt)</label>
+            <input id="av-loc" type="number" placeholder="2">
+          </div>
+          <button class="btn btn-primary" onclick="fetchAvailable()">Fetch</button>
+        </div>
+        <div id="av-result" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Reservations Panel -->
+    <div id="panel-reservations" class="panel">
+      <div class="card">
+        <h2>GET /resources/:id/reservations</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Resource ID</label>
+            <input id="rv-id" type="number" placeholder="1">
+          </div>
+          <button class="btn btn-primary" onclick="fetchReservations()">Fetch</button>
+        </div>
+        <div id="rv-result" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Resource Descriptors Panel -->
+    <div id="panel-descriptors-res" class="panel">
+      <div class="card">
+        <h2>GET /resources/descriptors</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Resource ID (opt)</label>
+            <input id="rd-rid" type="number" placeholder="1">
+          </div>
+          <div class="form-field">
+            <label>Descriptor ID (opt)</label>
+            <input id="rd-did" type="number" placeholder="3">
+          </div>
+          <button class="btn btn-primary" onclick="fetchResourceDescriptors()">Fetch</button>
+        </div>
+        <div id="rd-result" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Locations Panel -->
+    <div id="panel-locations" class="panel">
+      <div class="card">
+        <h2>GET /locations</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Name (opt)</label>
+            <input id="loc-name" placeholder="Building">
+          </div>
+          <button class="btn btn-primary" onclick="fetchLocations()">Fetch</button>
+        </div>
+        <div id="loc-result" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Descriptors Panel -->
+    <div id="panel-descriptors" class="panel">
+      <div class="card">
+        <h2>GET /descriptors</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Description (opt)</label>
+            <input id="desc-q" placeholder="projector">
+          </div>
+          <button class="btn btn-primary" onclick="fetchDescriptors()">Fetch</button>
+        </div>
+        <div id="desc-result" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Users Panel -->
+    <div id="panel-users" class="panel">
+      <div class="card">
+        <h2>GET /users (Admin only)</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Name</label>
+            <input id="u-name" placeholder="John">
+          </div>
+          <div class="form-field">
+            <label>Email</label>
+            <input id="u-email" placeholder="john@example.com">
+          </div>
+          <div class="form-field">
+            <label>Username</label>
+            <input id="u-uname" placeholder="johndoe">
+          </div>
+          <button class="btn btn-primary" onclick="fetchUsers()">Fetch</button>
+        </div>
+        <div id="u-result" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Students Panel -->
+    <div id="panel-students" class="panel">
+      <div class="card">
+        <h2>GET /users/students (Admin only)</h2>
+        <div class="form-row">
+          <button class="btn btn-primary" onclick="fetchStudents()">Fetch All Students</button>
+        </div>
+        <div id="st-result" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="assets/js/utils.js"></script>
+<script>
+// ============================================================
+// PAGE-SPECIFIC JAVASCRIPT
+// ============================================================
+
+// Tab navigation
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  // Find the clicked anchor and mark it active
+  document.querySelectorAll('nav a').forEach(a => {
+    if (a.textContent.toLowerCase().includes(id.toLowerCase())) {
+      a.classList.add('active');
+    }
+  });
+}
+
+// Helper: get input value
+function v(id) {
+  return document.getElementById(id)?.value?.trim() ?? '';
+}
+
+// API call functions for each endpoint
+function fetchResources() {
+  const url = '/resources' + buildQS({ 
+    name: v('r-name'), 
+    type: v('r-type'), 
+    location_id: v('r-loc') 
+  });
+  callAPI(url, 'res-result');
+}
+
+function fetchAvailable() {
+  const url = '/resources/available' + buildQS({ 
+    start: v('av-start'), 
+    duration: v('av-dur'), 
+    location_id: v('av-loc') 
+  });
+  callAPI(url, 'av-result');
+}
+
+function fetchReservations() {
+  const id = v('rv-id');
+  if (!id) return alert('Resource ID required');
+  callAPI(`/resources/${id}/reservations`, 'rv-result');
+}
+
+function fetchResourceDescriptors() {
+  const url = '/resources/descriptors' + buildQS({ 
+    resource_id: v('rd-rid'), 
+    descriptor_id: v('rd-did') 
+  });
+  callAPI(url, 'rd-result');
+}
+
+function fetchLocations() {
+  const url = '/locations' + buildQS({ name: v('loc-name') });
+  callAPI(url, 'loc-result');
+}
+
+function fetchDescriptors() {
+  const url = '/descriptors' + buildQS({ description: v('desc-q') });
+  callAPI(url, 'desc-result');
+}
+
+function fetchUsers() {
+  const url = '/users' + buildQS({ 
+    name: v('u-name'), 
+    email: v('u-email'), 
+    username: v('u-uname') 
+  });
+  callAPI(url, 'u-result');
+}
+
+function fetchStudents() {
+  callAPI('/users/students', 'st-result');
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  // Set first panel active if none active
+  if (!document.querySelector('.panel.active')) {
+    document.getElementById('panel-resources').classList.add('active');
+  }
+});
+</script>
+
+</body>
+</html>

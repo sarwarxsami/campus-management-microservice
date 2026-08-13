@@ -1,0 +1,247 @@
+.
+├── api-gateway
+│   └── nginx.conf
+├── create-service
+│   ├── Dockerfile
+│   ├── HELP.md
+│   ├── mvnw
+│   ├── mvnw.cmd
+│   ├── pom.xml
+│   ├── src
+│   │   ├── main
+│   │   │   ├── java
+│   │   │   │   └── com
+│   │   │   │       └── example
+│   │   │   │           └── create_service
+│   │   │   │               ├── controller
+│   │   │   │               │   ├── AdminController.java
+│   │   │   │               │   └── UserController.java
+│   │   │   │               ├── CreateServiceApplication.java
+│   │   │   │               ├── model
+│   │   │   │               │   └── Task.java
+│   │   │   │               ├── repository
+│   │   │   │               │   └── TaskRepository.java
+│   │   │   │               └── service
+│   │   │   │                   └── UserService.java
+│   │   │   └── resources
+│   │   │       ├── application.properties
+│   │   │       ├── static
+│   │   │       └── templates
+│   │   └── test
+│   │       └── java
+│   │           └── com
+│   │               └── example
+│   │                   └── create_service
+│   │                       └── CreateServiceApplicationTests.java
+│   └── target
+│       ├── classes
+│       │   ├── application.properties
+│       │   └── com
+│       │       └── example
+│       │           └── create_service
+│       │               ├── controller
+│       │               │   ├── AdminController.class
+│       │               │   └── UserController.class
+│       │               ├── CreateServiceApplication.class
+│       │               ├── model
+│       │               │   └── Task.class
+│       │               ├── repository
+│       │               │   └── TaskRepository.class
+│       │               └── service
+│       │                   └── UserService.class
+│       └── test-classes
+│           └── com
+│               └── example
+│                   └── create_service
+│                       └── CreateServiceApplicationTests.class
+├── db
+│   ├── Environment.md
+│   ├── init.sql
+│   └── pg.sh
+├── docker-compose.yml
+├── docs
+│   └── architecture.md
+├── login-service
+│   ├── Dockerfile
+│   ├── HELP.md
+│   ├── mvnw
+│   ├── mvnw.cmd
+│   ├── pom.xml
+│   ├── src
+│   │   ├── main
+│   │   │   ├── java
+│   │   │   │   └── com
+│   │   │   │       └── example
+│   │   │   │           └── login_service
+│   │   │   │               ├── controller
+│   │   │   │               │   ├── ResourceController.java
+│   │   │   │               │   └── StudentController.java
+│   │   │   │               ├── LoginServiceApplication.java
+│   │   │   │               ├── model
+│   │   │   │               │   └── Task.java
+│   │   │   │               ├── repository
+│   │   │   │               │   └── TaskRepository.java
+│   │   │   │               └── service
+│   │   │   │                   └── UserService.java
+│   │   │   └── resources
+│   │   │       ├── application.properties
+│   │   │       ├── static
+│   │   │       └── templates
+│   │   └── test
+│   │       └── java
+│   │           └── com
+│   │               └── example
+│   │                   └── login_service
+│   │                       └── LoginServiceApplicationTests.java
+│   └── target
+│       ├── classes
+│       │   ├── application.properties
+│       │   └── com
+│       │       └── example
+│       │           └── login_service
+│       │               ├── controller
+│       │               │   └── ResourceController.class
+│       │               ├── LoginServiceApplication.class
+│       │               ├── model
+│       │               │   └── Task.class
+│       │               ├── repository
+│       │               │   └── TaskRepository.class
+│       │               └── service
+│       │                   └── UserService.class
+│       └── test-classes
+│           └── com
+│               └── example
+│                   └── login_service
+│                       └── LoginServiceApplicationTests.class
+├── logistic-service
+│   ├── Dockerfile
+│   ├── package.json
+│   └── src
+│       ├── model
+│       ├── routes
+│       │   ├── equipment
+│       │   └── token
+│       └── server.js
+├── README.md
+├── reservation-service
+│   ├── Dockerfile
+│   ├── HELP.md
+│   ├── mvnw
+│   ├── mvnw.cmd
+│   ├── pom.xml
+│   ├── src
+│   │   ├── main
+│   │   │   ├── java
+│   │   │   │   └── com
+│   │   │   │       └── example
+│   │   │   │           └── reservation_service
+│   │   │   │               ├── controller
+│   │   │   │               │   └── UserController.java
+│   │   │   │               ├── model
+│   │   │   │               │   └── Task.java
+│   │   │   │               ├── repository
+│   │   │   │               │   └── TaskRepository.java
+│   │   │   │               ├── ReservationServiceApplication.java
+│   │   │   │               └── service
+│   │   │   │                   └── UserService.java
+│   │   │   └── resources
+│   │   │       ├── application.properties
+│   │   │       ├── static
+│   │   │       └── templates
+│   │   └── test
+│   │       └── java
+│   │           └── com
+│   │               └── example
+│   │                   └── reservation_service
+│   │                       └── ReservationServiceApplicationTests.java
+│   └── target
+│       ├── classes
+│       │   ├── application.properties
+│       │   └── com
+│       │       └── example
+│       │           └── reservation_service
+│       │               ├── controller
+│       │               │   └── UserController.class
+│       │               ├── model
+│       │               │   └── Task.class
+│       │               ├── repository
+│       │               ├── ReservationServiceApplication.class
+│       │               └── service
+│       │                   └── UserService.class
+│       ├── generated-sources
+│       │   └── annotations
+│       ├── maven-status
+│       │   └── maven-compiler-plugin
+│       │       └── compile
+│       │           └── default-compile
+│       │               ├── createdFiles.lst
+│       │               └── inputFiles.lst
+│       └── test-classes
+│           └── com
+│               └── example
+│                   └── reservation_service
+│                       └── ReservationServiceApplicationTests.class
+├── sami.txt
+├── search-service
+│   ├── Dockerfile
+│   ├── package.json
+│   └── src
+│       ├── model
+│       ├── routes
+│       │   ├── history
+│       │   └── user
+│       └── server.js
+└── update-service
+    ├── Dockerfile
+    ├── HELP.md
+    ├── mvnw
+    ├── mvnw.cmd
+    ├── pom.xml
+    ├── src
+    │   ├── main
+    │   │   ├── java
+    │   │   │   └── com
+    │   │   │       └── example
+    │   │   │           └── update_service
+    │   │   │               ├── controller
+    │   │   │               │   ├── ResourceController.java
+    │   │   │               │   └── UserController.java
+    │   │   │               ├── model
+    │   │   │               │   └── Task.java
+    │   │   │               ├── repository
+    │   │   │               │   └── TaskRepository.java
+    │   │   │               ├── service
+    │   │   │               │   └── UserService.java
+    │   │   │               └── UpdateServiceApplication.java
+    │   │   └── resources
+    │   │       ├── application.properties
+    │   │       ├── static
+    │   │       └── templates
+    │   └── test
+    │       └── java
+    │           └── com
+    │               └── example
+    │                   └── update_service
+    │                       └── UpdateServiceApplicationTests.java
+    └── target
+        ├── classes
+        │   ├── application.properties
+        │   └── com
+        │       └── example
+        │           └── update_service
+        │               ├── controller
+        │               │   └── UserController.class
+        │               ├── model
+        │               │   └── Task.class
+        │               ├── repository
+        │               │   └── TaskRepository.class
+        │               ├── service
+        │               │   └── UserService.class
+        │               └── UpdateServiceApplication.class
+        └── test-classes
+            └── com
+                └── example
+                    └── update_service
+                        └── UpdateServiceApplicationTests.class
+
+150 directories, 95 files
