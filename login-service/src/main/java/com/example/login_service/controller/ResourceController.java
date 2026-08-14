@@ -25,7 +25,7 @@ public String debug(@Autowired DataSource dataSource) throws Exception {
 
     return 
         "Database: " + conn.getCatalog() +
-        "\nUser: " + conn.getMetaData().getUserName() +
+        "\nUser: " + conn.getMetaData().getuser_name() +
         "\nURL: " + conn.getMetaData().getURL();
 }
 

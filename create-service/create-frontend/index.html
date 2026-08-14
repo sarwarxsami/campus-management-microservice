@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Service - API Tester</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="layout">
+        <aside>
+            <div class="aside-logo">
+                📦 Create Service
+                <small>API Tester</small>
+            </div>
+            <nav>
+                <div class="nav-group">Resources</div>
+                <a class="active" data-tab="resource">➕ Create Resource</a>
+                <a data-tab="location">📍 Create Location</a>
+                <a data-tab="descriptor">🏷️ Create Descriptor</a>
+                <a data-tab="resource-descriptor">🔗 Link Resource & Descriptor</a>
+                <a data-tab="admin">👤 Create Admin</a>
+                <a data-tab="student">👨‍🎓 Create Student</a>
+            </nav>
+        </aside>
+
+        <main class="page">
+            <!-- Create Resource -->
+            <div class="panel active" id="tab-resource">
+                <h1>Create Resource</h1>
+                <div class="page-sub">POST /resource</div>
+                <div class="card">
+                    <h2>Request Body</h2>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>Name *</label>
+                            <input type="text" id="res-name" value="Room A" placeholder="Room name">
+                        </div>
+                        <div class="form-field">
+                            <label>Type *</label>
+                            <input type="text" id="res-type" value="classroom" placeholder="classroom / lab / meeting">
+                        </div>
+                        <div class="form-field">
+                            <label>Location ID *</label>
+                            <input type="number" id="res-location" value="1" placeholder="Location ID">
+                        </div>
+                        <div class="form-field">
+                            <label>Capacity</label>
+                            <input type="number" id="res-capacity" value="30" placeholder="Capacity">
+                        </div>
+                        <div class="form-field">
+                            <button class="btn btn-primary" id="btn-resource">Send Request</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="result-resource"></div>
+            </div>
+
+            <!-- Create Location -->
+            <div class="panel" id="tab-location">
+                <h1>Create Location</h1>
+                <div class="page-sub">POST /location</div>
+                <div class="card">
+                    <h2>Request Body</h2>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>Name *</label>
+                            <input type="text" id="loc-name" value="Building A" placeholder="Location name">
+                        </div>
+                        <div class="form-field">
+                            <button class="btn btn-primary" id="btn-location">Send Request</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="result-location"></div>
+            </div>
+
+            <!-- Create Descriptor -->
+            <div class="panel" id="tab-descriptor">
+                <h1>Create Descriptor</h1>
+                <div class="page-sub">POST /descriptor</div>
+                <div class="card">
+                    <h2>Request Body</h2>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>Description *</label>
+                            <input type="text" id="desc-desc" value="Projector" placeholder="Description">
+                        </div>
+                        <div class="form-field">
+                            <button class="btn btn-primary" id="btn-descriptor">Send Request</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="result-descriptor"></div>
+            </div>
+
+            <!-- Link Resource & Descriptor -->
+            <div class="panel" id="tab-resource-descriptor">
+                <h1>Link Resource & Descriptor</h1>
+                <div class="page-sub">POST /resource-descriptor</div>
+                <div class="card">
+                    <h2>Request Body</h2>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>Resource IDs (comma separated)</label>
+                            <input type="text" id="rd-resources" value="1,2,3" placeholder="1,2,3">
+                        </div>
+                        <div class="form-field">
+                            <label>Descriptor IDs (comma separated)</label>
+                            <input type="text" id="rd-descriptors" value="1,2" placeholder="1,2">
+                        </div>
+                        <div class="form-field">
+                            <button class="btn btn-primary" id="btn-rd">Send Request</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="result-rd"></div>
+            </div>
+
+            <!-- Create Admin -->
+            <div class="panel" id="tab-admin">
+                <h1>Create Admin</h1>
+                <div class="page-sub">POST /admin</div>
+                <div class="card">
+                    <h2>Request Body</h2>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>Name *</label>
+                            <input type="text" id="admin-name" value="Admin User" placeholder="Full name">
+                        </div>
+                        <div class="form-field">
+                            <label>Email *</label>
+                            <input type="text" id="admin-email" value="admin@example.com" placeholder="Email">
+                        </div>
+                        <div class="form-field">
+                            <label>Password *</label>
+                            <input type="text" id="admin-pass" value="securepassword123" placeholder="Password">
+                        </div>
+                        <div class="form-field">
+                            <label>Username *</label>
+                            <input type="text" id="admin-user" value="admin" placeholder="Username">
+                        </div>
+                        <div class="form-field">
+                            <button class="btn btn-primary" id="btn-admin">Send Request</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="result-admin"></div>
+            </div>
+
+            <!-- Create Student -->
+            <div class="panel" id="tab-student">
+                <h1>Create Student</h1>
+                <div class="page-sub">POST /student</div>
+                <div class="card">
+                    <h2>Request Body</h2>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>Name *</label>
+                            <input type="text" id="student-name" value="John Doe" placeholder="Full name">
+                        </div>
+                        <div class="form-field">
+                            <label>Email *</label>
+                            <input type="text" id="student-email" value="john@example.com" placeholder="Email">
+                        </div>
+                        <div class="form-field">
+                            <label>Password *</label>
+                            <input type="text" id="student-pass" value="password123" placeholder="Password">
+                        </div>
+                        <div class="form-field">
+                            <label>Username *</label>
+                            <input type="text" id="student-user" value="john_doe" placeholder="Username">
+                        </div>
+                        <div class="form-field">
+                            <button class="btn btn-primary" id="btn-student">Send Request</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="result-student"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/js/utils.js"></script>
+</body>
+</html>

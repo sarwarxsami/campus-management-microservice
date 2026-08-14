@@ -4,11 +4,14 @@ const locationRepository = {
   // GET /locations?name=
   async findAll({ name } = {}) {
     const values = [];
-    const where = name
-      ? `WHERE name ILIKE $${values.push(`%${name}%`)}`
-      : "";
-
-    const sql = `SELECT * FROM "Location" ${where} ORDER BY id`;
+    let sql = `SELECT * FROM location`;
+    
+    if (name) {
+      values.push(`%${name}%`);
+      sql += ` WHERE name ILIKE $1`;
+    }
+    
+    sql += ` ORDER BY id`;
     const { rows } = await pool.query(sql, values);
     return rows;
   },

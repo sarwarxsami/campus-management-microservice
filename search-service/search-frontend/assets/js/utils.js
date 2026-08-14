@@ -1,4 +1,4 @@
-const BASE = 'http://localhost:3001/service/search-service';
+const BASE = 'http://localhost:80/service/search-service';
 
 /**
  * Build query string from an object, skipping empty values.
@@ -120,7 +120,7 @@ function formatCell(col, val) {
     const [label, cls] = STATE_LABELS[val];
     return `<span class="badge ${cls}">${label}</span>`;
   }
-  if (col === 'userType') {
+  if (col === 'user_type') {
     return val === 0
       ? '<span class="badge badge-blue">Student</span>'
       : '<span class="badge badge-gray">Admin</span>';

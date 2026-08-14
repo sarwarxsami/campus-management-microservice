@@ -161,7 +161,7 @@
             <input id="u-email" placeholder="john@example.com">
           </div>
           <div class="form-field">
-            <label>Username</label>
+            <label>user_name</label>
             <input id="u-uname" placeholder="johndoe">
           </div>
           <button class="btn btn-primary" onclick="fetchUsers()">Fetch</button>
@@ -255,7 +255,7 @@ function fetchUsers() {
   const url = '/users' + buildQS({ 
     name: v('u-name'), 
     email: v('u-email'), 
-    username: v('u-uname') 
+    user_name: v('u-uname') 
   });
   callAPI(url, 'u-result');
 }

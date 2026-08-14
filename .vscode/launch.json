@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "CreateServiceApplication",
+            "request": "launch",
+            "mainClass": "com.example.create_service.CreateServiceApplication",
+            "projectName": "create-service"
+        },
+        {
             "type": "editor-browser",
             "request": "launch",
             "name": "Launch Integrated Browser against localhost",
