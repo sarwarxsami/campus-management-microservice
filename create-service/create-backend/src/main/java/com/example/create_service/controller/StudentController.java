@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.create_service.service.StudentService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController
 public class StudentController extends BaseController{
 
@@ -17,7 +19,7 @@ public class StudentController extends BaseController{
 
     @PostMapping("/student")
     @Override
-    public String trigger(@RequestBody Map<String, String> request) {
+    public String trigger(HttpServletRequest request0, @RequestBody Map<String, String> request) {
         return this.create(request);
     }
 

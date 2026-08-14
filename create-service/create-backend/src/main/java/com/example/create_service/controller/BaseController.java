@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.create_service.service.BaseService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+
 public abstract class BaseController {
     protected final BaseService service;
 
@@ -21,5 +24,5 @@ public abstract class BaseController {
     }
 
     @SuppressWarnings("unused")
-    abstract String trigger(@RequestBody Map<String, String> request);
+    abstract String trigger(HttpServletRequest request0, @RequestBody Map<String, String> request);
 }
