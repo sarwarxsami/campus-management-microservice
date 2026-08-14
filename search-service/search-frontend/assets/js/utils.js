@@ -1,5 +1,33 @@
 const BASE = 'http://localhost:80/service/search-service';
 
+// ⭐ JWT Token management
+function getToken() {
+  try {
+    const token = localStorage.getItem('jwt_token');
+    if (token) {
+      console.log('JWT token retrieved successfully');
+    } else {
+      console.warn('No JWT token found in localStorage');
+    }
+    return token;
+  } catch (error) {
+    console.error('Error accessing localStorage:', error);
+    return null;
+  }
+}
+
+function setToken(token) {
+    localStorage.setItem('jwt_token', token);
+}
+
+function removeToken() {
+    localStorage.removeItem('jwt_token');
+}
+
+function isAuthenticated() {
+    return getToken() !== null;
+}
+
 /**
  * Build query string from an object, skipping empty values.
  */
@@ -35,8 +63,28 @@ async function callAPI(path, containerId) {
 
   let res, data;
   try {
-    res  = await fetch(fullURL);
-    data = await res.json();
+    // ⭐ Get token and add to headers
+    const token = getToken();
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    if (token) {
+      headers['Authorization'] = 'Bearer ' + token;
+      console.log('🔑 Token added to request');
+    } else {
+      console.warn('⚠️ No token found - please login first');
+    }
+    
+    res = await fetch(fullURL, { headers });
+    
+    // Try to parse as JSON, but handle non-JSON responses
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      data = await res.json();
+    } else {
+      data = await res.text();
+    }
   } catch (err) {
     box.innerHTML = `
       <div class="result-meta">
@@ -44,6 +92,30 @@ async function callAPI(path, containerId) {
         <span class="status-err">Network error</span>
       </div>
       <div class="result-raw">${err.message}</div>
+    `;
+    return;
+  }
+
+  // ⭐ Handle 401 Unauthorized
+  if (res.status === 401) {
+    box.innerHTML = `
+      <div class="result-meta">
+        <span>GET ${fullURL}</span>
+        <span class="status-err">401 Unauthorized - Please login</span>
+      </div>
+      <div class="result-raw">${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}</div>
+    `;
+    return;
+  }
+
+  // ⭐ Handle 403 Forbidden (not admin)
+  if (res.status === 403) {
+    box.innerHTML = `
+      <div class="result-meta">
+        <span>GET ${fullURL}</span>
+        <span class="status-err">403 Forbidden - Admin access required</span>
+      </div>
+      <div class="result-raw">${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}</div>
     `;
     return;
   }
@@ -57,7 +129,7 @@ async function callAPI(path, containerId) {
         <span>GET ${fullURL}</span>
         <span class="${statusClass}">${statusText}</span>
       </div>
-      <div class="result-raw">${JSON.stringify(data, null, 2)}</div>
+      <div class="result-raw">${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}</div>
     `;
     return;
   }
@@ -126,4 +198,95 @@ function formatCell(col, val) {
       : '<span class="badge badge-gray">Admin</span>';
   }
   return String(val);
+}
+
+// ⭐ Add login status check on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const token = getToken();
+    const statusEl = document.getElementById('auth-status');
+    const logoutBtn = document.getElementById('btn-logout');
+    
+    if (statusEl) {
+        if (token) {
+            statusEl.innerHTML = '✅ Logged in';
+            statusEl.style.color = 'var(--ok)';
+        } else {
+            statusEl.innerHTML = '❌ Not logged in';
+            statusEl.style.color = 'var(--danger)';
+        }
+    }
+    
+    if (logoutBtn) {
+        if (token) {
+            logoutBtn.style.display = 'inline-block';
+        } else {
+            logoutBtn.style.display = 'none';
+        }
+    }
+});
+
+// ⭐ Logout function
+function handleLogout() {
+    removeToken();
+    const statusEl = document.getElementById('auth-status');
+    const logoutBtn = document.getElementById('btn-logout');
+    
+    if (statusEl) {
+        statusEl.innerHTML = '❌ Not logged in';
+        statusEl.style.color = 'var(--danger)';
+    }
+    
+    if (logoutBtn) {
+        logoutBtn.style.display = 'none';
+    }
+    
+    console.log('🔐 Logged out');
+    // Optionally reload the page
+    // location.reload();
+}
+
+// ⭐ Check if user is admin (for UI purposes)
+function isAdmin() {
+    try {
+        const token = getToken();
+        if (!token) return false;
+        
+        // Decode token to check user_type
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.userType === '1' || payload.user_type === '1';
+    } catch (e) {
+        return false;
+    }
+}
+
+// ⭐ Get user info from token
+function getUserInfo() {
+    try {
+        const token = getToken();
+        if (!token) return null;
+        
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return {
+            userId: payload.userId,
+            userType: payload.userType || payload.user_type,
+            username: payload.sub
+        };
+    } catch (e) {
+        return null;
+    }
+}
+
+// Export for module usage
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        getToken,
+        setToken,
+        removeToken,
+        isAuthenticated,
+        isAdmin,
+        getUserInfo,
+        callAPI,
+        buildQS,
+        handleLogout
+    };
 }

@@ -46,17 +46,24 @@ services:
       DB_USER: user
       DB_PASSWORD: password
 
-  # login-service:
-  #   build: ./login-service/
-  #   container_name: campus-login-service
-  #   networks:
-  #     - user-net
-  #     - db-net
-  #   env_file:
-  #     - ./.env
-  #   depends_on:
-  #     - db
-
+  login-service:
+    build: ./login-service/login-backend
+    container_name: campus-login-service
+    networks:
+      - user-net
+      - db-net
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    ports:
+      - "8081:8081"
+    environment:
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_NAME: postgresdb
+      DB_USER: user
+      DB_PASSWORD: password
 
   search-service:
     build: ./search-service/search-backend/
