@@ -27,7 +27,12 @@ function displayResult(containerId, data, status) {
     container.innerHTML = html;
 }
 
-// Generic POST function
+// Get JWT token from localStorage
+function getAuthToken() {
+    return localStorage.getItem('jwt_token') || localStorage.getItem('token') || null;
+}
+
+// Generic POST function with JWT support
 async function postRequest(endpoint, body, containerId) {
     const btn = document.querySelector(`#${containerId.replace('result-', 'btn-')}`);
     if (btn) btn.disabled = true;
@@ -37,9 +42,20 @@ async function postRequest(endpoint, body, containerId) {
         console.log('📤 Sending to:', url);
         console.log('📦 Body:', body);
         
+        // Prepare headers
+        const headers = { 'Content-Type': 'application/json' };
+        const token = getAuthToken();
+        
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+            console.log('🔑 JWT token attached to request');
+        } else {
+            console.warn('⚠️ No JWT token found in localStorage');
+        }
+        
         const response = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: headers,
             body: JSON.stringify(body)
         });
         
@@ -51,6 +67,13 @@ async function postRequest(endpoint, body, containerId) {
             data = await response.json();
         } else {
             data = await response.text();
+        }
+        
+        // Handle unauthorized response
+        if (response.status === 401) {
+            console.error('🔒 Unauthorized - Token may be expired or invalid');
+            // Optional: Redirect to login page
+            // window.location.href = '/login.html';
         }
         
         displayResult(containerId, data, response.status);
@@ -81,7 +104,7 @@ document.getElementById('btn-resource').addEventListener('click', function() {
     const body = {
         name: document.getElementById('res-name').value,
         type: document.getElementById('res-type').value,
-        location_id: parseInt(document.getElementById('res-location').value),  // ← FIXED: location_id
+        location_id: parseInt(document.getElementById('res-location').value),
         capacity: parseInt(document.getElementById('res-capacity').value) || null
     };
     postRequest('/resource', body, 'result-resource');
@@ -144,6 +167,34 @@ document.getElementById('btn-student').addEventListener('click', function() {
     postRequest('/student', body, 'result-student');
 });
 
+// ---- Set JWT Token (Utility function for login) ----
+// Add this function to set token after login
+function setAuthToken(token) {
+    localStorage.setItem('jwt_token', token);
+    console.log('✅ JWT token saved to localStorage');
+}
+
+// ---- Clear JWT Token (Utility function for logout) ----
+function clearAuthToken() {
+    localStorage.removeItem('jwt_token');
+    console.log('🗑️ JWT token removed from localStorage');
+}
+
+// ---- Check if token exists on page load ----
+(function checkTokenOnLoad() {
+    const token = getAuthToken();
+    if (token) {
+        console.log('🔑 JWT token found on page load');
+        // Optionally display token status in UI
+        const statusEl = document.createElement('div');
+        statusEl.style.cssText = 'position: fixed; top: 10px; right: 10px; padding: 10px; background: #4CAF50; color: white; border-radius: 5px; font-size: 12px; z-index: 9999;';
+        statusEl.textContent = '🔒 Authenticated';
+        document.body.appendChild(statusEl);
+    } else {
+        console.log('🔓 No JWT token found');
+    }
+})();
+
 // ---- Enter key support ----
 document.querySelectorAll('input').forEach(input => {
     input.addEventListener('keydown', function(e) {
@@ -159,3 +210,4 @@ document.querySelectorAll('input').forEach(input => {
 
 console.log('✅ Create Service Frontend loaded!');
 console.log('📡 API Base URL:', API_BASE);
+console.log('🔑 Token support:', getAuthToken() ? 'Token found' : 'No token found');

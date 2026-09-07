@@ -1,14 +1,12 @@
-package com.example.create_service.controller;
+package com.example.create_service.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.example.create_service.util.JwtUtil;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 @Component
-public class CheckController {
+public class AdminChecker {
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -26,6 +24,6 @@ public class CheckController {
         }
         
         String token = authHeader.substring(7);
-        return jwtUtil.checkIfAdmin(token);
+        return jwtUtil.isAdmin(token);
     }
 }

@@ -1,18 +1,20 @@
-package com.example.create_service.middleware;
+package com.example.reservation_service.middleware;
 
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.example.create_service.util.JwtUtil;
+import com.example.reservation_service.util.JwtUtil;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class AdminMiddleware extends OncePerRequestFilter {
+@Component
+public class AuthMiddleware extends OncePerRequestFilter {
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -22,14 +24,6 @@ public class AdminMiddleware extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain)
             throws ServletException, IOException {
-
-        String path = request.getRequestURI();
-
-        if (path.startsWith("/student") ||
-                path.startsWith("/admin")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         String authHeader = request.getHeader("Authorization");
 

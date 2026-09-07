@@ -78,18 +78,6 @@ services:
     depends_on:
       - db
 
-
-  # update-service:
-  #   build: ./update-service/
-  #   container_name: campus-update-service
-  #   networks:
-  #     - task-net
-  #     - db-net
-  #   env_file:
-  #     - ./.env
-  #   depends_on:
-  #     - db
-
   # reservation-service:
   #   build: ./reservation-service/
   #   container_name: campus-reservation-service
