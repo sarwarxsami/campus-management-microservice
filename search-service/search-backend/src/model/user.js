@@ -1,10 +1,10 @@
 class User {
-  constructor({ id, name, email, username, usertype }) {
+  constructor({ id, name, email, user_name, user_type }) {
     this.id = id;
     this.name = name;
     this.email = email;
-    this.username = username;
-    this.userType = usertype !== undefined ? Number(usertype) : null;
+    this.user_name = user_name;
+    this.user_type = user_type !== undefined ? Number(user_type) : null;
   }
 }
 

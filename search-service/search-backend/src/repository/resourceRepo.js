@@ -5,22 +5,23 @@ const resourceRepository = {
   async findAll({ name, type, location_id } = {}) {
     const conditions = [];
     const values = [];
+    let paramCounter = 1;
 
     if (name) {
       values.push(`%${name}%`);
-      conditions.push(`r.name ILIKE $${values.length}`);
+      conditions.push(`r.name ILIKE $${paramCounter++}`);
     }
     if (type) {
       values.push(`%${type}%`);
-      conditions.push(`r.type ILIKE $${values.length}`);
+      conditions.push(`r.type ILIKE $${paramCounter++}`);
     }
     if (location_id) {
       values.push(Number(location_id));
-      conditions.push(`r.location_id = $${values.length}`);
+      conditions.push(`r.location_id = $${paramCounter++}`);
     }
 
     const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
-    const sql = `SELECT * FROM "Resource" r ${where} ORDER BY r.id`;
+    const sql = `SELECT * FROM resource r ${where} ORDER BY r.id`;
     const { rows } = await pool.query(sql, values);
     return rows;
   },
@@ -28,11 +29,11 @@ const resourceRepository = {
   // GET /resources/location/:locationId
   async findByLocation(locationId) {
     const resourceSql = `
-      SELECT r.* FROM "Resource" r
+      SELECT r.* FROM resource r
       WHERE r.location_id = $1
       ORDER BY r.id
     `;
-    const locationSql = `SELECT * FROM "Location" WHERE id = $1`;
+    const locationSql = `SELECT * FROM location WHERE id = $1`;
 
     const [resourceResult, locationResult] = await Promise.all([
       pool.query(resourceSql, [locationId]),
@@ -48,7 +49,7 @@ const resourceRepository = {
   // GET /resources/type/:type
   async findByType(type) {
     const sql = `
-      SELECT * FROM "Resource"
+      SELECT * FROM resource
       WHERE type ILIKE $1
       ORDER BY id
     `;
@@ -60,23 +61,24 @@ const resourceRepository = {
   async findDescriptors({ resource_id, descriptor_id } = {}) {
     const conditions = [];
     const values = [];
+    let paramCounter = 1;
 
     if (resource_id) {
       values.push(Number(resource_id));
-      conditions.push(`rd.resource_id = $${values.length}`);
+      conditions.push(`rd.resource_id = $${paramCounter++}`);
     }
     if (descriptor_id) {
       values.push(Number(descriptor_id));
-      conditions.push(`rd.descriptor_id = $${values.length}`);
+      conditions.push(`rd.descriptor_id = $${paramCounter++}`);
     }
 
     const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
     const sql = `
       SELECT rd.resource_id, r.name AS resource_name,
              rd.descriptor_id, d.description
-      FROM "Resource-Descriptor" rd
-      JOIN "Resource" r    ON r.id = rd.resource_id
-      JOIN "Descriptor" d  ON d.id = rd.descriptor_id
+      FROM resource_descriptor rd
+      JOIN resource r ON r.id = rd.resource_id
+      JOIN descriptor d ON d.id = rd.descriptor_id
       ${where}
       ORDER BY rd.resource_id, rd.descriptor_id
     `;
@@ -87,17 +89,21 @@ const resourceRepository = {
   // GET /resources/available?start=&duration=&location_id=
   async findAvailable({ start, duration, location_id }) {
     const values = [start, Number(duration)];
-    const locationFilter = location_id
-      ? `AND r.location_id = $${values.push(Number(location_id))}`
-      : "";
+    let paramCounter = 3; // Start after the first two parameters
+    let locationFilter = "";
+
+    if (location_id) {
+      values.push(Number(location_id));
+      locationFilter = `AND r.location_id = $${paramCounter++}`;
+    }
 
     // Exclude resources that have a conflicting PENDING(0) or CONFIRMED(1) reservation
     const sql = `
-      SELECT r.* FROM "Resource" r
+      SELECT r.* FROM resource r
       WHERE r.available = true
         ${locationFilter}
         AND r.id NOT IN (
-          SELECT res.resource_id FROM "Reservation" res
+          SELECT res.resource_id FROM reservation res
           WHERE res."currentState" IN (0, 1)
             AND res.start < ($1::timestamp + ($2 || ' minutes')::interval)
             AND (res.start + (res.duration || ' minutes')::interval) > $1::timestamp
@@ -110,10 +116,10 @@ const resourceRepository = {
 
   // GET /resources/:resourceId/reservations
   async findReservationsByResource(resourceId) {
-    const resourceSql = `SELECT id FROM "Resource" WHERE id = $1`;
+    const resourceSql = `SELECT id FROM resource WHERE id = $1`;
     const reservationSql = `
       SELECT user_id, start, duration, "currentState"
-      FROM "Reservation"
+      FROM reservation
       WHERE resource_id = $1
       ORDER BY start
     `;

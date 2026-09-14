@@ -2,16 +2,16 @@ const userRepository = require("../repository/userRepo");
 const User = require("../model/user");
 
 const userController = {
-  // GET /users?name=&email=&username=
+  // GET /users?name=&email=&user_name=
   async getUsers(req, res) {
-    const { name, email, username } = req.query;
-    const rows = await userRepository.findAll({ name, email, username });
+    const { name, email, user_name } = req.query;
+    const rows = await userRepository.findAll({ name, email, user_name });
 
     return res.json({
       filters: {
         name: name || null,
         email: email || null,
-        username: username || null,
+        user_name: user_name || null,
       },
       data: rows.map((u) => new User(u)),
     });

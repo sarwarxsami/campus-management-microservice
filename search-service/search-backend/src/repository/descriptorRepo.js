@@ -4,11 +4,14 @@ const descriptorRepository = {
   // GET /descriptors?description=
   async findAll({ description } = {}) {
     const values = [];
-    const where = description
-      ? `WHERE description ILIKE $${values.push(`%${description}%`)}`
-      : "";
-
-    const sql = `SELECT * FROM "Descriptor" ${where} ORDER BY id`;
+    let sql = `SELECT * FROM descriptor`;
+    
+    if (description) {
+      values.push(`%${description}%`);
+      sql += ` WHERE description ILIKE $1`;
+    }
+    
+    sql += ` ORDER BY id`;
     const { rows } = await pool.query(sql, values);
     return rows;
   },

@@ -2,15 +2,20 @@ FROM node:24 AS builder
 
 WORKDIR /app
 
-COPY ./package.json ./package.json
-COPY ./src/ /app/src
+COPY package*.json ./
 
 RUN npm install
 
+COPY ./src ./src
+
 FROM node:24-alpine AS runtime
 
-WORKDIR /search-service
+WORKDIR /app
 
-COPY --from=builder /app ./
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/src ./src
 
-CMD [ "node", "./src/server.js" ]
+EXPOSE 3001
+
+CMD ["node", "./src/server.js"]

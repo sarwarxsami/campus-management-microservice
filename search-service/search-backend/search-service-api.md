@@ -171,7 +171,7 @@ Returns resource-descriptor mappings. Filter by `resource_id`, `descriptor_id`, 
 
 ## User Search *(Admin only)*
 
-### GET `/service/search-service/users?name=&email=&username=`
+### GET `/service/search-service/users?name=&email=&user_name=`
 Search all users (students + admins). All params optional.
 
 **Query Params**
@@ -179,7 +179,7 @@ Search all users (students + admins). All params optional.
 |---|---|---|
 | `name` | string | Partial or full name |
 | `email` | string | Partial or full email |
-| `username` | string | Partial or full username |
+| `user_name` | string | Partial or full user_name |
 
 **Response**
 ```json
@@ -187,22 +187,22 @@ Search all users (students + admins). All params optional.
   "filters": {
     "name": "John",
     "email": null,
-    "username": null
+    "user_name": null
   },
   "data": [
     {
       "id": 1,
       "name": "John Doe",
       "email": "john@example.com",
-      "username": "johndoe",
-      "userType": 0
+      "user_name": "johndoe",
+      "user_type": 0
     },
     {
       "id": 7,
       "name": "John Smith",
       "email": "jsmith@example.com",
-      "username": "jsmith",
-      "userType": 1
+      "user_name": "jsmith",
+      "user_type": 1
     }
   ]
 }
@@ -211,7 +211,7 @@ Search all users (students + admins). All params optional.
 ---
 
 ### GET `/service/search-service/users/students`
-Returns all users with `userType = 0` (Student).
+Returns all users with `user_type = 0` (Student).
 
 **Response**
 ```json
@@ -221,15 +221,15 @@ Returns all users with `userType = 0` (Student).
       "id": 1,
       "name": "John Doe",
       "email": "john@example.com",
-      "username": "johndoe",
-      "userType": 0
+      "user_name": "johndoe",
+      "user_type": 0
     },
     {
       "id": 3,
       "name": "Sara Ali",
       "email": "sara@example.com",
-      "username": "saraali",
-      "userType": 0
+      "user_name": "saraali",
+      "user_type": 0
     }
   ]
 }
