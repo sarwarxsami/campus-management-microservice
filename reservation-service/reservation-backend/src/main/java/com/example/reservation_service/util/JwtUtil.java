@@ -13,7 +13,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 
@@ -67,7 +66,7 @@ public class JwtUtil {
         } catch (ExpiredJwtException e) {
             System.err.println("Token expired: " + e.getMessage());
             return false;
-        } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
+        } catch (MalformedJwtException | UnsupportedJwtException e) {
             System.err.println("Invalid token: " + e.getMessage());
             return false;
         } catch (Exception e) {

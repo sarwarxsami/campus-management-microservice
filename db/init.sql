@@ -10,6 +10,9 @@ DROP TABLE IF EXISTS "base_user" CASCADE;
 DROP TYPE IF EXISTS "user_type" CASCADE;
 DROP TYPE IF EXISTS "reservation_state" CASCADE;
 
+-- Required for EXCLUDE with integer equality (resource_id WITH =)
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+
 CREATE TYPE "user_type" AS ENUM ('student', 'admin');
 CREATE TYPE "reservation_state" AS ENUM ('PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED');
 
@@ -91,6 +94,16 @@ FOREIGN KEY("resource_id") REFERENCES "resource"("id") ON DELETE CASCADE;
 ALTER TABLE "reservation" 
 ADD CONSTRAINT "fk_reservation_user" 
 FOREIGN KEY("user_id") REFERENCES "base_user"("id") ON DELETE CASCADE;
+
+-- Prevents overlapping active reservations on the same resource.
+-- Uses duration * INTERVAL '1 minute' (IMMUTABLE) instead of text-concat cast.
+ALTER TABLE "reservation"
+ADD CONSTRAINT "no_overlapping_active_reservation"
+EXCLUDE USING gist (
+    "resource_id" WITH =,
+    tsrange("start", "start" + ("duration" * INTERVAL '1 minute'), '[)') WITH &&
+)
+WHERE ("currentState" IN (0, 1));
 
 
 -- locations

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservation Service</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Top bar -->
+<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 20px; background:var(--surface); border-bottom:1px solid var(--border);">
+    <div>📅 Reservation Service</div>
+    <div>
+        <span id="auth-status" style="font-size:12px; color:var(--muted);">Checking...</span>
+        <button id="btn-logout" onclick="handleLogout()" style="display:none; margin-left:12px; padding:4px 12px; border:none; border-radius:4px; background:#dc2626; color:white; cursor:pointer; font-size:12px;">Logout</button>
+    </div>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="aside-logo">
+      Reservation Service
+      <small>/service/reservation-service</small>
+    </div>
+    <nav>
+      <div class="nav-group">Query</div>
+      <a href="#" data-panel="search" class="active" onclick="showPanel('search')">🔍 Search All</a>
+      <a href="#" data-panel="by-location" onclick="showPanel('by-location')">📍 By Location</a>
+      <a href="#" data-panel="by-resource" onclick="showPanel('by-resource')">🗂 By Resource</a>
+      <a href="#" data-panel="by-user" onclick="showPanel('by-user')">👤 By User</a>
+      <a href="#" data-panel="by-descriptor" onclick="showPanel('by-descriptor')">🏷 By Descriptor</a>
+      <a href="#" data-panel="by-state" onclick="showPanel('by-state')">🚦 By State</a>
+
+      <div class="nav-group">Actions</div>
+      <a href="#" data-panel="create" onclick="showPanel('create')">➕ Create Reservation</a>
+
+      <div class="nav-group">Lifecycle</div>
+      <a href="#" data-panel="confirm" onclick="showPanel('confirm')">✅ Confirm</a>
+      <a href="#" data-panel="cancel" onclick="showPanel('cancel')">❌ Cancel</a>
+      <a href="#" data-panel="complete" onclick="showPanel('complete')">🏁 Complete</a>
+
+      <div class="nav-group">Auth</div>
+      <a href="#" data-panel="auth" onclick="showPanel('auth')">🔐 Auth Status</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="page">
+    <h1>Reservation Service API Explorer</h1>
+    <div class="page-sub">/service/reservation-service :8082</div>
+
+    <!-- Search All -->
+    <div id="panel-search" class="panel active">
+      <div class="card">
+        <h2>GET /search</h2>
+        <div class="form-row">
+          <button class="btn btn-primary" onclick="fetchSearchAll()">Fetch All Reservations</button>
+        </div>
+        <div id="res-search" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- By Location -->
+    <div id="panel-by-location" class="panel">
+      <div class="card">
+        <h2>GET /search/location</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Location ID</label>
+            <input id="loc-id" type="number" placeholder="1">
+          </div>
+          <button class="btn btn-primary" onclick="fetchByLocation()">Fetch</button>
+        </div>
+        <div id="res-location" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- By Resource -->
+    <div id="panel-by-resource" class="panel">
+      <div class="card">
+        <h2>GET /search/resource</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Resource ID</label>
+            <input id="res-id" type="number" placeholder="1">
+          </div>
+          <button class="btn btn-primary" onclick="fetchByResource()">Fetch</button>
+        </div>
+        <div id="res-resource" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- By User -->
+    <div id="panel-by-user" class="panel">
+      <div class="card">
+        <h2>GET /search/user</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>User ID</label>
+            <input id="usr-id" type="number" placeholder="1">
+          </div>
+          <button class="btn btn-primary" onclick="fetchByUser()">Fetch</button>
+        </div>
+        <div id="res-user" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- By Descriptor -->
+    <div id="panel-by-descriptor" class="panel">
+      <div class="card">
+        <h2>GET /search/descriptor</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Descriptor ID</label>
+            <input id="dsc-id" type="number" placeholder="1">
+          </div>
+          <button class="btn btn-primary" onclick="fetchByDescriptor()">Fetch</button>
+        </div>
+        <div id="res-descriptor" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- By State -->
+    <div id="panel-by-state" class="panel">
+      <div class="card">
+        <h2>GET /search/currentState</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>State</label>
+            <select id="state-val" style="padding:7px 10px; border:1px solid var(--border); border-radius:6px; font-size:13px; background:var(--bg);">
+              <option value="0">0 — PENDING</option>
+              <option value="1">1 — CONFIRMED</option>
+              <option value="2">2 — CANCELLED</option>
+              <option value="3">3 — COMPLETED</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="fetchByState()">Fetch</button>
+        </div>
+        <div id="res-state" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Create -->
+    <div id="panel-create" class="panel">
+      <div class="card">
+        <h2>POST /reservations</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>User ID</label>
+            <input id="cr-user" type="number" placeholder="1">
+          </div>
+          <div class="form-field">
+            <label>Resource ID</label>
+            <input id="cr-res" type="number" placeholder="1">
+          </div>
+          <div class="form-field">
+            <label>Start (ISO)</label>
+            <input id="cr-start" placeholder="2030-01-01T10:00:00">
+          </div>
+          <div class="form-field">
+            <label>Duration (min)</label>
+            <input id="cr-dur" type="number" placeholder="60">
+          </div>
+          <button class="btn btn-primary" onclick="doCreate()">Create</button>
+        </div>
+        <div id="res-create" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Confirm -->
+    <div id="panel-confirm" class="panel">
+      <div class="card">
+        <h2>POST /reservations/:id/confirm</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Reservation ID</label>
+            <input id="cf-id" type="number" placeholder="1">
+          </div>
+          <button class="btn btn-primary" onclick="doConfirm()">Confirm</button>
+        </div>
+        <div id="res-confirm" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Cancel -->
+    <div id="panel-cancel" class="panel">
+      <div class="card">
+        <h2>POST /reservations/:id/cancel</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Reservation ID</label>
+            <input id="cn-id" type="number" placeholder="1">
+          </div>
+          <button class="btn btn-primary" onclick="doCancel()">Cancel</button>
+        </div>
+        <div id="res-cancel" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Complete -->
+    <div id="panel-complete" class="panel">
+      <div class="card">
+        <h2>POST /reservations/:id/complete</h2>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Reservation ID</label>
+            <input id="cm-id" type="number" placeholder="1">
+          </div>
+          <button class="btn btn-primary" onclick="doComplete()">Complete</button>
+        </div>
+        <div id="res-complete" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Auth -->
+    <div id="panel-auth" class="panel">
+      <div class="card">
+        <h2>Auth Status</h2>
+        <div class="form-row">
+          <button class="btn btn-primary" onclick="showAuthInfo()">Show Current Token Info</button>
+          <button class="btn" onclick="handleLogout()" style="background:#dc2626; color:white;">Logout</button>
+        </div>
+        <div id="res-auth" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="assets/js/utils.js"></script>
+<script>
+// ── Panel navigation ────────────────────────────────────────
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  document.querySelectorAll('nav a').forEach(a => {
+    if (a.dataset.panel === id) a.classList.add('active');
+  });
+}
+
+// ── Helpers ─────────────────────────────────────────────────
+function v(id) {
+  return document.getElementById(id)?.value?.trim() ?? '';
+}
+
+// ── Query actions ───────────────────────────────────────────
+function fetchSearchAll() {
+  callAPI('/search', 'res-search');
+}
+
+function fetchByLocation() {
+  const id = v('loc-id');
+  if (!id) return alert('Location ID required');
+  callAPI('/search/location?locationId=' + encodeURIComponent(id), 'res-location');
+}
+
+function fetchByResource() {
+  const id = v('res-id');
+  if (!id) return alert('Resource ID required');
+  callAPI('/search/resource?resourceId=' + encodeURIComponent(id), 'res-resource');
+}
+
+function fetchByUser() {
+  const id = v('usr-id');
+  if (!id) return alert('User ID required');
+  callAPI('/search/user?userId=' + encodeURIComponent(id), 'res-user');
+}
+
+function fetchByDescriptor() {
+  const id = v('dsc-id');
+  if (!id) return alert('Descriptor ID required');
+  callAPI('/search/descriptor?descriptorId=' + encodeURIComponent(id), 'res-descriptor');
+}
+
+function fetchByState() {
+  const s = v('state-val');
+  if (s === '') return alert('State required');
+  callAPI('/search/currentState?currentState=' + encodeURIComponent(s), 'res-state');
+}
+
+// ── Action endpoints ────────────────────────────────────────
+function doCreate() {
+  const payload = {
+    userId:          Number(v('cr-user')),
+    resourceId:      Number(v('cr-res')),
+    start:           v('cr-start'),
+    durationMinutes: Number(v('cr-dur'))
+  };
+  if (!payload.userId || !payload.resourceId || !payload.start || !payload.durationMinutes) {
+    return alert('All fields are required');
+  }
+  callAPI('/reservations', 'res-create', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
+}
+
+function doConfirm() {
+  const id = v('cf-id');
+  if (!id) return alert('Reservation ID required');
+  callAPI('/reservations/' + id + '/confirm', 'res-confirm', { method: 'POST' });
+}
+
+function doCancel() {
+  const id = v('cn-id');
+  if (!id) return alert('Reservation ID required');
+  callAPI('/reservations/' + id + '/cancel', 'res-cancel', { method: 'POST' });
+}
+
+function doComplete() {
+  const id = v('cm-id');
+  if (!id) return alert('Reservation ID required');
+  callAPI('/reservations/' + id + '/complete', 'res-complete', { method: 'POST' });
+}
+
+// ── Auth info ───────────────────────────────────────────────
+function showAuthInfo() {
+  const box = document.getElementById('res-auth');
+  box.style.display = 'block';
+
+  const token = getToken();
+  if (!token) {
+    box.innerHTML = `
+      <div class="result-meta"><span>Auth</span><span class="status-err">No token</span></div>
+      <div class="result-raw">Not logged in. Go to the login page to authenticate.</div>
+    `;
+    return;
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(atob(token.split('.')[1]));
+  } catch {
+    payload = { error: 'Failed to decode token payload' };
+  }
+
+  box.innerHTML = `
+    <div class="result-meta">
+      <span>JWT</span>
+      <span class="status-ok">Decoded</span>
+    </div>
+    <div class="result-raw">${JSON.stringify(payload, null, 2)}</div>
+  `;
+}
+
+// ── Boot ────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  if (!document.querySelector('.panel.active')) {
+    document.getElementById('panel-search').classList.add('active');
+  }
+  updateAuthUI();
+});
+</script>
+
+</body>
+</html>

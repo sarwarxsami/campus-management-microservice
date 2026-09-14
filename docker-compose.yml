@@ -8,8 +8,8 @@ services:
       - user-net
       - task-net
       - default-net
-    depends_on:
-      - search-service
+    # depends_on:
+      # - search-service
     volumes:
       - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
   db:
@@ -27,24 +27,24 @@ services:
     networks:
       - db-net
 
-  create-service:
-    build: ./create-service/create-backend/
-    container_name: campus-create-service
-    networks:
-      - task-net
-      - db-net
-    env_file:
-      - ./.env
-    depends_on:
-      - db
-    ports:
-      - "8080:8080"
-    environment:
-      DB_HOST: postgres-db
-      DB_PORT: 5432
-      DB_NAME: postgresdb
-      DB_USER: user
-      DB_PASSWORD: password
+  # create-service:
+  #   build: ./create-service/create-backend/
+  #   container_name: campus-create-service
+  #   networks:
+  #     - task-net
+  #     - db-net
+  #   env_file:
+  #     - ./.env
+  #   depends_on:
+  #     - db
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     DB_HOST: postgres-db
+  #     DB_PORT: 5432
+  #     DB_NAME: postgresdb
+  #     DB_USER: user
+  #     DB_PASSWORD: password
 
   login-service:
     build: ./login-service/login-backend
@@ -65,29 +65,37 @@ services:
       DB_USER: user
       DB_PASSWORD: password
 
-  search-service:
-    build: ./search-service/search-backend/
-    container_name: campus-search-service
-    networks:
-      - default-net
-      - db-net
-    ports:
-      - "3001:3001"
-    env_file:
-      - ./.env
-    depends_on:
-      - db
-
-  # reservation-service:
-  #   build: ./reservation-service/
-  #   container_name: campus-reservation-service
+  # search-service:
+  #   build: ./search-service/search-backend/
+  #   container_name: campus-search-service
   #   networks:
   #     - default-net
   #     - db-net
+  #   ports:
+  #     - "3001:3001"
   #   env_file:
   #     - ./.env
   #   depends_on:
   #     - db
+
+  reservation-service:
+    build: ./reservation-service/reservation-backend
+    container_name: campus-reservation-service
+    networks:
+      - default-net
+      - db-net
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    environment:
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_NAME: postgresdb
+      DB_USER: user
+      DB_PASSWORD: password
+    ports:
+      - "8082:8082"
 
   # logistic-service:
   #   build: ./logistic-service/
