@@ -25,6 +25,6 @@ public final class CompletedState implements ReservationState {
 
     @Override
     public ReservationState complete(Reservation r) {
-        return this;   // idempotent
+        return this;  
     }
 }

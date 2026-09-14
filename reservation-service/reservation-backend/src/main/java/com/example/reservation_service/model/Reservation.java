@@ -35,7 +35,6 @@ public class Reservation {
     @Column(name = "duration", nullable = false)
     private int duration;
 
-    // ⚠️ Quoted camelCase column
     @Column(name = "`currentState`")
     private Integer currentState;
 
@@ -63,33 +62,25 @@ public class Reservation {
         this.currentState = currentState;
     }
 
-    // ─────────────────────────────────────────────
-    // State-pattern API — delegates to the state object
-    // ─────────────────────────────────────────────
 
-    /** Current state object (never null). */
     @Transient
     public ReservationState state() {
         return ReservationStates.fromCode(currentState);
     }
 
-    /** Human label, e.g. "PENDING". */
     @Transient
     public String stateLabel() {
         return state().label();
     }
 
-    /** Confirm this reservation. Throws if illegal. */
     public void confirm() {
         applyState(state().confirm(this));
     }
 
-    /** Cancel this reservation. Throws if illegal. */
     public void cancel() {
         applyState(state().cancel(this));
     }
 
-    /** Complete this reservation. Throws if illegal. */
     public void complete() {
         applyState(state().complete(this));
     }
@@ -98,9 +89,6 @@ public class Reservation {
         this.currentState = next.code();
     }
 
-    // ─────────────────────────────────────────────
-    // Getters / setters
-    // ─────────────────────────────────────────────
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 

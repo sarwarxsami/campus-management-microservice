@@ -1,15 +1,12 @@
 package com.example.reservation_service.state;
 
-/**
- * Stateless factory + registry for ReservationState implementations.
- * Keeps the int<->object mapping in one place.
- */
+
 public final class ReservationStates {
 
     private ReservationStates() {}
 
     public static ReservationState fromCode(Integer code) {
-        if (code == null) return PendingState.INSTANCE;   // default
+        if (code == null) return PendingState.INSTANCE;  
         return switch (code) {
             case 0 -> PendingState.INSTANCE;
             case 1 -> ConfirmedState.INSTANCE;
@@ -20,7 +17,6 @@ public final class ReservationStates {
         };
     }
 
-    /** Convenience for @PrePersist default. */
     public static int defaultCode() {
         return PendingState.INSTANCE.code();
     }

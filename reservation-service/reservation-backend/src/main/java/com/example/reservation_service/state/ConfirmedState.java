@@ -1,6 +1,5 @@
 package com.example.reservation_service.state;
 
-import com.example.reservation_service.exception.InvalidStateTransitionException;
 import com.example.reservation_service.model.Reservation;
 
 public final class ConfirmedState implements ReservationState {
@@ -15,7 +14,6 @@ public final class ConfirmedState implements ReservationState {
 
     @Override
     public ReservationState confirm(Reservation r) {
-        // already confirmed — idempotent no-op
         return this;
     }
 

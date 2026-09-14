@@ -11,7 +11,6 @@ import com.example.reservation_service.model.Reservation;
 
 public interface ReservationRepo extends JpaRepository<Reservation, Integer> {
 
-    // ─── Derived queries (use ENTITY field names) ───
     List<Reservation> findByUserId(int userId);
 
     List<Reservation> findByResourceId(int resourceId);
@@ -20,9 +19,7 @@ public interface ReservationRepo extends JpaRepository<Reservation, Integer> {
 
     List<Reservation> findByCurrentState(Integer currentState);
 
-    // ─── Native queries (use DB column/table names) ───
 
-    // Reservation → Resource → Location
     @Query(value = """
             SELECT res.* FROM reservation res
             JOIN resource r ON r.id = res.resource_id
@@ -30,8 +27,7 @@ public interface ReservationRepo extends JpaRepository<Reservation, Integer> {
             """, nativeQuery = true)
     List<Reservation> findByLocationId(@Param("locationId") int locationId);
 
-    // Reservation → Resource → resource_descriptor → Descriptor
-    // DISTINCT prevents duplicate rows when a resource has multiple matches
+
     @Query(value = """
             SELECT DISTINCT res.* FROM reservation res
             JOIN resource r ON r.id = res.resource_id
@@ -40,11 +36,7 @@ public interface ReservationRepo extends JpaRepository<Reservation, Integer> {
             """, nativeQuery = true)
     List<Reservation> findByDescriptorId(@Param("descriptorId") int descriptorId);
 
-    /**
-     * True if any active reservation on the given resource overlaps [start, end).
-     * "Active" = PENDING (0) or CONFIRMED (1).
-     * CANCELLED (2) and COMPLETED (3) are ignored — they don't block new bookings.
-     */
+
     @Query("""
                 SELECT COUNT(r) > 0 FROM Reservation r
                 WHERE r.resourceId = :resourceId
@@ -56,10 +48,6 @@ public interface ReservationRepo extends JpaRepository<Reservation, Integer> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end);
 
-    /**
-     * Same as above, but excluding one reservation id — useful for
-     * "edit/reschedule".
-     */
     @Query("""
                 SELECT COUNT(r) > 0 FROM Reservation r
                 WHERE r.resourceId = :resourceId

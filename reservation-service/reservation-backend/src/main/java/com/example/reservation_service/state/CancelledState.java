@@ -20,7 +20,7 @@ public final class CancelledState implements ReservationState {
 
     @Override
     public ReservationState cancel(Reservation r) {
-        return this;   // idempotent
+        return this;  
     }
 
     @Override

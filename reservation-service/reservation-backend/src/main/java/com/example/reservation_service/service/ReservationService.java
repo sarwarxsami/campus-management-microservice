@@ -20,10 +20,6 @@ public class ReservationService {
         this.repo = repo;
     }
 
-    /**
-     * Create a reservation, rejecting if the time slot conflicts with an
-     * existing PENDING or CONFIRMED reservation on the same resource.
-     */
     @Transactional
     public Reservation create(int userId,
             int resourceId,
@@ -45,7 +41,6 @@ public class ReservationService {
         r.setResourceId(resourceId);
         r.setStart(start);
         r.setDuration(durationMinutes);
-        // currentState defaults to PENDING via @PrePersist
 
         return repo.save(r);
     }

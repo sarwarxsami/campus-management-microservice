@@ -15,7 +15,6 @@ public final class PendingState implements ReservationState {
 
     @Override
     public ReservationState confirm(Reservation r) {
-        // side effects allowed here
         return ConfirmedState.INSTANCE;
     }
 
